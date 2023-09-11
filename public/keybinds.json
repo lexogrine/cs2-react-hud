@@ -1,0 +1,6 @@
+[
+    {
+        "bind":"Alt+C",
+        "action":"toggleCams"
+    }
+]

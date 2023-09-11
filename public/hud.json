@@ -1,0 +1,13 @@
+{
+    "name":"Lexogrine CS2 HUD",
+    "version":"1.0.0",
+    "author":"Lexogrine",
+    "legacy": false,
+    "radar": true,
+    "killfeed": false,
+    "game":"cs2",
+    "boltobserv":{
+        "css":true,
+        "maps":true
+    }
+}
