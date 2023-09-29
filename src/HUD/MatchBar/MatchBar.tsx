@@ -159,10 +159,10 @@ export default class TeamBox extends React.Component<IProps, IState> {
   getRoundLabel = () => {
     const { map } = this.props;
     const round = map.round + 1;
-    if (round <= 30) {
-      return `Round ${round}/30`;
+    if (round <= 24) {
+      return `Round ${round}/24`;
     }
-    const additionalRounds = round - 30;
+    const additionalRounds = round - 24;
     const OT = Math.ceil(additionalRounds/6);
     return `OT ${OT} (${additionalRounds - (OT - 1)*6}/6)`;
   }

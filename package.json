@@ -1,6 +1,6 @@
 {
   "name": "lexogrine_cs2_hud",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage": "./",
   "private": true,
   "dependencies": {
@@ -11,7 +11,7 @@
     "@types/react-dom": "17.0.11",
     "@types/simple-peer": "^9.11.3",
     "buffer": "^6.0.3",
-    "csgogsi-socket": "^2.7.1",
+    "csgogsi-socket": "^2.7.2",
     "query-string": "^6.12.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
