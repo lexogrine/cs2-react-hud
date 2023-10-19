@@ -64,6 +64,21 @@
                 "label":"Right box's image logo"
             },
             {
+                "type":"select",
+                "name":"replace_avatars",
+                "label":"Use team logos as player avatars",
+                "values": [
+                    {
+                        "label": "Only if player has no avatar",
+                        "name": "if_missing"
+                    },
+                    {
+                        "label": "Always",
+                        "name": "always"
+                    }
+                ]
+            },
+            {
                 "type": "action",
                 "name": "boxesState",
                 "values": [
