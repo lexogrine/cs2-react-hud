@@ -1,16 +1,12 @@
-import React from "react";
-import * as I from "csgogsi-socket";
-import { Match } from "../../api/interfaces";
+import * as I from "csgogsi";
+import { Match } from "../../API/types";
 
 interface Props {
   map: I.Map;
-  phase: I.PhaseRaw;
   match: Match | null;
 }
 
-export default class SeriesBox extends React.Component<Props> {
-  render() {
-    const { match, map } = this.props;
+const SeriesBox = ({ map, match }: Props) => {
     const amountOfMaps = (match && Math.floor(Number(match.matchType.substr(-1)) / 2) + 1) || 0;
     const bo = (match && Number(match.matchType.substr(-1))) || 0;
     const left = map.team_ct.orientation === "left" ? map.team_ct : map.team_t;
@@ -40,5 +36,6 @@ export default class SeriesBox extends React.Component<Props> {
         </div>
       </div>
     );
-  }
 }
+
+export default SeriesBox;

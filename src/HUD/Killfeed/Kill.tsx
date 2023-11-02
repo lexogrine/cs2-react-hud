@@ -1,13 +1,11 @@
 import React from 'react';
 import Weapon from './../Weapon/Weapon';
 import flash_assist from './../../assets/flash_assist.png';
-
-
 import { C4, Defuse, FlashedKill, Headshot, NoScope, SmokeKill, Suicide, Wallbang } from "./../../assets/Icons"
 import { ExtendedKillEvent, BombEvent } from "./Killfeed"
-export default class Kill extends React.Component<{ event: ExtendedKillEvent | BombEvent }> {
-	render() {
-		const { event } = this.props;
+
+
+ const Kill = ({event}: { event: ExtendedKillEvent | BombEvent }) => {
 		if (event.type !== "kill") {
 			return (
 				<div className={`single_kill`}>
@@ -50,6 +48,6 @@ export default class Kill extends React.Component<{ event: ExtendedKillEvent | B
 				</div>
 			</div>
 		);
-	}
 
 }
+export default Kill;

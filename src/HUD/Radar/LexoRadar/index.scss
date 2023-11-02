@@ -51,12 +51,20 @@ html, body, .map-container {
 }
 .map .player, .map .grenade, .map .bomb {
     position: absolute;
-    height:30px;
-    width:30px;
+    height:0px;
+    width:0px;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: opacity 0.5s ease;
+    .content {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
     /*transition: all 0.1s ease;/**/
 }
 .map .player .background {
@@ -66,7 +74,7 @@ html, body, .map-container {
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
-    transition:transform 0.2s ease;
+    transition:transform 0.2s linear;
 }
 .map .player .background-fire {
     position: absolute;
@@ -140,9 +148,11 @@ html, body, .map-container {
 }
 */
 .map .player.active {
-    width:120%;
-    height:120%;
     z-index: 3;
+}
+.map .player.active .content {
+    width:48px;
+    height:48px;
 }
 .map .grenade .background {
     border-radius:50%;
@@ -157,9 +167,6 @@ html, body, .map-container {
     opacity: 1;
     transition: opacity 1s;
 }
-.map .grenade.smoke {
-    transition: all 0.5s;
-}
 .map .grenade.smoke.inair .background {
     background-color: transparent !important;
     border: none !important;
@@ -167,7 +174,6 @@ html, body, .map-container {
     filter: invert(1);
 }
 .map .grenade.smoke.exploded .background {
-    opacity: 0;
 }
 .map .grenade.flashbang, .map .grenade.frag {
     filter: invert(1);
@@ -183,6 +189,8 @@ html, body, .map-container {
 .map .grenade .explode-point, .map .bomb .explode-point {
     position: absolute;
     width: 2px;
+    top: calc(50% - 1px);
+    left:  calc(50% - 1px);
     height: 2px;
     border-radius: 0.08px;
 }
@@ -194,7 +202,6 @@ html, body, .map-container {
     opacity: 0;
 }
 .map .grenade.smoke .background {
-    border: 5px solid grey;
     background-color: rgba(255,255,255,0.5);
 }
 .map .grenade.smoke.CT .background {
@@ -214,9 +221,8 @@ html, body, .map-container {
     width:12px;
     height:12px;
 }
-.map .grenade.smoke {
-    width:60px;
-    height:60px;
+.map .grenade .content {
+    position: absolute;
 }
 .map .grenade.inferno .background {
     background-color: red;
@@ -270,16 +276,29 @@ html, body, .map-container {
     background: red;
 }
 
-@keyframes Hidden {
-    from {
-    }
-    to {
-        display: none !important;
-    }
+.map .player.dead .background {
+    display: none;
+}
+.map .player.dead .label {
+    background: transparent;
+}
+.map .player.dead.CT .label, .map .player.CT .label div {
+    color: var(--color-new-ct);
+}
+.map .player.dead.T .label, .map .player.T .label div {
+    color: var(--color-new-t);
 }
 .map .hidden {
-    opacity: 0;
-    animation: Hidden 1s ease 1s 1;
-    animation-fill-mode: forwards;/**/
+    opacity: 0 !important;
+}
 
+.map .grenade {
+    &.smoke {
+        &.exploded, &.landed {
+            .background {
+                display: flex;
+                flex-wrap: wrap;
+            }
+        }
+    }
 }

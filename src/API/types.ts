@@ -26,37 +26,47 @@ export interface HUD {
     legacy: boolean,
     dir: string
 }
-
+ 
 export interface Config {
     port: number,
     steamApiKey: string,
     token: string,
 }*/
 export interface TournamentMatchup {
-	_id: string;
-	loser_to: string | null; // IDs of Matchups, not Matches
-	winner_to: string | null;
-	label: string;
-	matchId: string | null;
-	parents: TournamentMatchup[];
+  _id: string;
+  loser_to: string | null; // IDs of Matchups, not Matches
+  winner_to: string | null;
+  label: string;
+  matchId: string | null;
+  parents: TournamentMatchup[];
 }
 
 export interface DepthTournamentMatchup extends TournamentMatchup {
-	depth: number;
-	parents: DepthTournamentMatchup[];
+  depth: number;
+  parents: DepthTournamentMatchup[];
 }
 
+export type TournamentTypes = 'swiss' | 'single' | 'double';
+
+export type TournamentStage = {
+  type: TournamentTypes;
+  matchups: TournamentMatchup[];
+  teams: number;
+  phases: number;
+  participants: string[];
+};
 export interface Tournament {
-	_id: string;
-	name: string;
-	logo: string;
-	matchups: TournamentMatchup[];
-	autoCreate: boolean;
+  _id: string;
+  name: string;
+  logo: string;
+  groups: TournamentStage[];
+  playoffs: TournamentStage;
+  autoCreate: boolean;
 }
 export interface RoundData {
   round: number,
   players: {
-      [steamid: string]: PlayerRoundData
+    [steamid: string]: PlayerRoundData
   },
   winner: 'CT' | 'T' | null,
   win_type: 'bomb' | 'elimination' | 'defuse' | 'time',
@@ -128,24 +138,24 @@ export type Weapon =
 export type Pistol = "c75a" | "deagle" | "elite" | "fiveseven" | "glock" | "hkp2000" | "p250" | "revolver" | "taser" | "tec9" | "usp_silencer";
 
 export type Knife =
-| "knife"//
-| "knife_css"//--
-| "knife_butterfly"//
-| "knife_falchion"//
-| "knife_flip"//
-| "knife_outdoor" // Nomad Knife
-| "knife_gut"//
-| "knife_gypsy_jackknife"//
-| "knife_karambit"// 
-| "knife_bayonet" //
-| "knife_cord" //
-| "knife_m9_bayonet"//
-| "knife_push" // Shadow daggers
-| "knife_stiletto"//
-| "knife_survival_bowie"//
-| "knife_t"//
-| "knife_skeleton" //
-| "knife_tactical"//
-| "knife_ursus"//
-| "knife_widowmaker"//
-| "knife_canis";//
+  | "knife"//
+  | "knife_css"//--
+  | "knife_butterfly"//
+  | "knife_falchion"//
+  | "knife_flip"//
+  | "knife_outdoor" // Nomad Knife
+  | "knife_gut"//
+  | "knife_gypsy_jackknife"//
+  | "knife_karambit"// 
+  | "knife_bayonet" //
+  | "knife_cord" //
+  | "knife_m9_bayonet"//
+  | "knife_push" // Shadow daggers
+  | "knife_stiletto"//
+  | "knife_survival_bowie"//
+  | "knife_t"//
+  | "knife_skeleton" //
+  | "knife_tactical"//
+  | "knife_ursus"//
+  | "knife_widowmaker"//
+  | "knife_canis";//

@@ -1,7 +1,7 @@
 import { Instance, SignalData } from 'simple-peer';
-import api from '../../api/api';
-import { socket as Socket } from "../../App";
-const Peer = require('simple-peer');
+import api from '..';
+import { socket } from '../socket';
+import Peer from 'simple-peer';
 
 const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 
@@ -73,7 +73,6 @@ const closeConnection = (steamid: string) => {
 }
 
 const initiateConnection = async () => {
-    const socket = Socket as SocketIOClient.Socket;
     const camera = await api.camera.get();
     await wait(1000);
 
@@ -104,7 +103,7 @@ const initiateConnection = async () => {
 
         if (camera.uuid !== roomId) return;
 
-        const peerConnection: PeerInstance = new Peer({ initiator: false, trickle: false });
+        const peerConnection = new Peer({ initiator: false, trickle: false }) as PeerInstance;
 
         const mediaStreamPlayer: MediaStreamPlayer = { peerConnection, steamid };
 

@@ -1,7 +1,10 @@
-const path = require('path');
-const fs = require('fs');
-const crypto = require('crypto');
-const jwt = require('jsonwebtoken');
+import path from 'path';
+import fs from 'fs';
+import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
+import { fileURLToPath } from 'url';
+
+const __esm_dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const sign = () => {
     const getAllFilesToSign = (hudDir) => {
@@ -17,7 +20,7 @@ const sign = () => {
         return files;
     }
     
-    const dir = path.join(__dirname, 'build');
+    const dir = path.join(__esm_dirname, 'build');
     
     const keyFile = path.join(dir, 'key');
     

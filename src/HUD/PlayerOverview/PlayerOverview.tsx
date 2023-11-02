@@ -1,10 +1,8 @@
-import React from 'react';
-import * as I from '../../api/interfaces';
-import { avatars } from './../../api/avatars';
-import { apiUrl } from '../../api/api';
+import * as I from '../../API/types';
 import { getCountry } from '../countries';
-import { Player } from 'csgogsi-socket';
+import { Player } from 'csgogsi';
 import "./playeroverview.scss";
+import { apiUrl } from '../../API';
 
 interface IProps {
     player: I.Player,
@@ -14,21 +12,34 @@ interface IProps {
     round: number
 }
 
-export default class PlayerOverview extends React.Component<IProps> {
-    sum = (data: number[]) => data.reduce((a, b) => a + b, 0);
+const sum = (data: number[]) => data.reduce((a, b) => a + b, 0);
 
-    getData = () => {
-        const { veto, player, round } = this.props;
-        if(!player || !veto || !veto.rounds) return null;
+const calcWidth = (val: number | string, max?: number) => {
+    const value = Number(val);
+    if(value === 0) return 0;
+    let maximum = max;
+    if(!maximum) {
+        maximum = Math.ceil(value/100)*100;
+    }
+    if(value > maximum){
+        return 100;
+    }
+    return 100*value/maximum;
+}
+
+const PlayerOverview = ({ player, show, veto, players, round }: IProps) => {
+    if(!player || !veto || !veto.rounds) return null;
+    const getData = () => {
+        if(!veto.rounds) return null;
         const stats = veto.rounds.map(round => round ? round.players[player.steamid] : {
 			kills: 0,
 			killshs: 0,
 			damage: 0
 		}).filter(data => !!data);
         const overall = {
-            damage: this.sum(stats.map(round => round.damage)),
-            kills: this.sum(stats.map(round => round.kills)),
-            killshs: this.sum(stats.map(round => round.killshs)),
+            damage: sum(stats.map(round => round.damage)),
+            kills: sum(stats.map(round => round.kills)),
+            killshs: sum(stats.map(round => round.killshs)),
         };
         const data = {
             adr: stats.length !== 0 ? (overall.damage/(round-1)).toFixed(0) : '0',
@@ -39,66 +50,51 @@ export default class PlayerOverview extends React.Component<IProps> {
         }
         return data;
     }
-    calcWidth = (val: number | string, max?: number) => {
-        const value = Number(val);
-        if(value === 0) return 0;
-        let maximum = max;
-        if(!maximum) {
-            maximum = Math.ceil(value/100)*100;
-        }
-        if(value > maximum){
-            return 100;
-        }
-        return 100*value/maximum;
-    }
-	render() {
-        const { player, veto, players } = this.props;
-        const data = this.getData();
-        if(!player || !veto || !veto.rounds || !data) return null;
-        let url = null;
-        // const avatarData = avatars.find(avatar => avatar.steamid === player.steamid);
-        const avatarData = avatars[player.steamid];
-        if(avatarData && avatarData.url){
-            url = avatarData.url;
-        }
-        const countryName = player.country ? getCountry(player.country) : null;
-        let side = '';
-        const inGamePlayer = players.find(inGamePlayer => inGamePlayer.steamid === player.steamid);
-        if(inGamePlayer) side = inGamePlayer.team.side;
-		return (
-            <div className={`player-overview ${this.props.show ? 'show':''} ${side}`}>
-                <div className="player-overview-picture">
-                    {url ? <img src={url} alt={`${player.username}'s avatar`}/> : null}
-                </div>
-                <div className="player-overview-username">{url && countryName ? <img src={`${apiUrl}files/img/flags/${countryName.replace(/ /g, "-")}.png`} className="flag" alt={countryName}/> : null }{player.username.toUpperCase()}</div>
 
-                <div className="player-overview-stats">
-                    <div className="player-overview-stat">
-                        <div className="label">KILLS: {data.kills}</div>
-                        <div className="panel">
-                            <div className="filling" style={{width:`${this.calcWidth(data.kills, data.kills <= 30 ? 30 : 40)}%`}}></div>
-                        </div>
+    const data = getData();
+    if(!data) return null;
+    const url = player.avatar;
+
+    const countryName = player.country ? getCountry(player.country) : null;
+    let side = '';
+    const inGamePlayer = players.find(inGamePlayer => inGamePlayer.steamid === player.steamid);
+    if(inGamePlayer) side = inGamePlayer.team.side;
+    return (
+        <div className={`player-overview ${show ? 'show':''} ${side}`}>
+            <div className="player-overview-picture">
+                {url ? <img src={url} alt={`${player.username}'s avatar`}/> : null}
+            </div>
+            <div className="player-overview-username">{url && countryName ? <img src={`${apiUrl}files/img/flags/${countryName.replace(/ /g, "-")}.png`} className="flag" alt={countryName}/> : null }{player.username.toUpperCase()}</div>
+
+            <div className="player-overview-stats">
+                <div className="player-overview-stat">
+                    <div className="label">KILLS: {data.kills}</div>
+                    <div className="panel">
+                        <div className="filling" style={{width:`${calcWidth(data.kills, data.kills <= 30 ? 30 : 40)}%`}}></div>
                     </div>
-                    <div className="player-overview-stat">
-                        <div className="label">HS: {data.hsp}%</div>
-                        <div className="panel">
-                            <div className="filling" style={{width:`${this.calcWidth(data.hsp, 100)}%`}}></div>
-                        </div>
+                </div>
+                <div className="player-overview-stat">
+                    <div className="label">HS: {data.hsp}%</div>
+                    <div className="panel">
+                        <div className="filling" style={{width:`${calcWidth(data.hsp, 100)}%`}}></div>
                     </div>
-                    <div className="player-overview-stat">
-                        <div className="label">ADR: {data.adr}</div>
-                        <div className="panel">
-                            <div className="filling" style={{width:`${this.calcWidth(data.adr)}%`}}></div>
-                        </div>
+                </div>
+                <div className="player-overview-stat">
+                    <div className="label">ADR: {data.adr}</div>
+                    <div className="panel">
+                        <div className="filling" style={{width:`${calcWidth(data.adr)}%`}}></div>
                     </div>
-                    <div className="player-overview-stat">
-                        <div className="label">KPR: {data.kpr}</div>
-                        <div className="panel">
-                            <div className="filling" style={{width:`${this.calcWidth(Number(data.kpr)*100)}%`}}></div>
-                        </div>
+                </div>
+                <div className="player-overview-stat">
+                    <div className="label">KPR: {data.kpr}</div>
+                    <div className="panel">
+                        <div className="filling" style={{width:`${calcWidth(Number(data.kpr)*100)}%`}}></div>
                     </div>
                 </div>
             </div>
-        );
-	}
+        </div>
+    );
+   
 }
+
+export default PlayerOverview;

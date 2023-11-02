@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import PlayerCamera from "./Camera";
-import api from "../../api/api";
+import api from "../../API";
 import "./index.scss";
 
 

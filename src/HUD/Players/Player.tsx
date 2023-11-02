@@ -1,10 +1,10 @@
-import React from "react";
-import * as I from "csgogsi-socket";
+import * as I from "csgogsi";
 import Weapon from "./../Weapon/Weapon";
 import Avatar from "./Avatar";
 import Armor from "./../Indicators/Armor";
 import Bomb from "./../Indicators/Bomb";
 import Defuse from "./../Indicators/Defuse";
+import React from "react";
 
 interface IProps {
   player: I.Player,
@@ -24,9 +24,9 @@ const compareWeapon = (weaponOne: I.WeaponRaw, weaponTwo: I.WeaponRaw) => {
   return false;
 }
 
-const compareWeapons = (weaponsObjectOne: { [key: string]: I.WeaponRaw }, weaponsObjectTwo: { [key: string]: I.WeaponRaw }) => {
-  const weaponsOne = Object.values(weaponsObjectOne).sort((a, b) => (a.name as any) - (b.name as any))
-  const weaponsTwo = Object.values(weaponsObjectTwo).sort((a, b) => (a.name as any) - (b.name as any))
+const compareWeapons = (weaponsObjectOne: I.Weapon[], weaponsObjectTwo: I.Weapon[]) => {
+  const weaponsOne = [...weaponsObjectOne].sort((a, b) => a.name.localeCompare(b.name))
+  const weaponsTwo = [...weaponsObjectTwo].sort((a, b) => a.name.localeCompare(b.name))
 
   if (weaponsOne.length !== weaponsTwo.length) return false;
 
@@ -58,6 +58,8 @@ const arePlayersEqual = (playerOne: I.Player, playerTwo: I.Player) => {
     playerOne.state.equip_value === playerTwo.state.equip_value &&
     playerOne.state.adr === playerTwo.state.adr &&
     playerOne.avatar === playerTwo.avatar &&
+    !!playerOne.team.id === !!playerTwo.team.id &&
+    playerOne.team.side === playerTwo.team.side &&
     playerOne.country === playerTwo.country &&
     playerOne.realName === playerTwo.realName &&
     compareWeapons(playerOne.weapons, playerTwo.weapons)
@@ -65,7 +67,6 @@ const arePlayersEqual = (playerOne: I.Player, playerTwo: I.Player) => {
 
   return false;
 }
-
 const Player = ({ player, isObserved }: IProps) => {
 
   const weapons = Object.values(player.weapons).map(weapon => ({ ...weapon, name: weapon.name.replace("weapon_", "") }));
@@ -76,7 +77,7 @@ const Player = ({ player, isObserved }: IProps) => {
   return (
     <div className={`player ${player.state.health === 0 ? "dead" : ""} ${isObserved ? 'active' : ''}`}>
       <div className="player_data">
-        <Avatar teamId={player.team.id} steamid={player.steamid} height={57} width={57} showSkull={false} showCam={false} sidePlayer={true} />
+        <Avatar teamId={player.team.id} steamid={player.steamid} url={player.avatar} height={57} width={57} showSkull={false} showCam={false} sidePlayer={true} />
         <div className="dead-stats">
           <div className="labels">
             <div className="stat-label">K</div>
@@ -104,7 +105,7 @@ const Player = ({ player, isObserved }: IProps) => {
           <div className="row">
             <div className="armor_and_utility">
               <Bomb player={player} />
-              <Armor player={player} />
+              <Armor health={player.state.health} armor={player.state.armor} helmet={player.state.helmet} />
               <Defuse player={player} />
             </div>
             <div className="money">${player.state.money}</div>
@@ -131,5 +132,5 @@ const arePropsEqual = (prevProps: Readonly<IProps>, nextProps: Readonly<IProps>)
   return arePlayersEqual(prevProps.player, nextProps.player);
 }
 
-//export default React.memo(Player, arePropsEqual);
-export default Player;
+export default React.memo(Player, arePropsEqual);
+//export default Player;

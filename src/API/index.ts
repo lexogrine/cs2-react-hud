@@ -1,14 +1,12 @@
-import * as I from './interfaces';
-import queryString from 'query-string';
+import * as I from './types';
 import { MapConfig } from '../HUD/Radar/LexoRadar/maps';
 
 
-const query = queryString.parseUrl(window.location.href).query;
-export const variant = query?.variant || "default";
+const query = new URLSearchParams(window.location.search);
+export const port = Number(query.get('port') || 1349);
+export const variant = query.get("variant") || "default";
 
-export const port = (query && Number(query.port)) || 1349;
-
-export const isDev = !query.isProd;
+export const isDev = !query.get("isProd");
 
 export const config = {apiAddress:isDev ? `http://localhost:${port}/` : '/'}
 export const apiUrl = config.apiAddress;
@@ -35,7 +33,22 @@ const api = {
         getCurrent: async (): Promise<I.Match> => apiV2(`match/current`)
     },
     camera: {
-        get: (): Promise<{ availablePlayers: ({steamid:string, label: string})[], uuid: string }> => apiV2('camera')
+        get: (): Promise<{ availablePlayers: ({steamid:string, label: string})[], uuid: string }> => apiV2('camera'),
+        toggleVmix: (status?: boolean) => new Promise<boolean>(r => {
+            const controller = new AbortController();
+            const signal = controller.signal;
+           // let finished = false;
+            const timeoutId = setTimeout(() => {
+                controller.abort();
+                r(false);
+            }, 1000)
+            fetch(`http://localhost:2715/visibility${status !== undefined ? `?status=${status}` : ''}`, { method: "POST", signal }).then(() => {
+                clearTimeout(timeoutId);
+                r(true);
+                //finished = true;
+            }).catch(() => { r(false); });
+
+        })
     },
     teams: {
         getOne: async (id: string): Promise<I.Team> => apiV2(`teams/${id}`),

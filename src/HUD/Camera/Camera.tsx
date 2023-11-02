@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { mediaStreams } from "./mediaStream";
 import { v4 as uuidv4 } from 'uuid';
+import { mediaStreams } from "../../API/HUD/camera";
 type Props = {
     steamid: string,
     visible: boolean;

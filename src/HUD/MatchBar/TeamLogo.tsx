@@ -1,11 +1,8 @@
-import React from 'react';
-import { Team } from 'csgogsi-socket';
-import * as I from '../../api/interfaces';
-import { apiUrl } from './../../api/api';
+import { Team } from 'csgogsi';
+import * as I from '../../API/types';
+import { apiUrl } from './../../API';
 
-export default class TeamLogo extends React.Component<{ team?: Team | I.Team | null, height?: number, width?: number}> {
-  render(){
-    const { team } = this.props;
+const TeamLogo = ({team, height, width }: { team?: Team | I.Team | null, height?: number, width?: number}) => {
     if(!team) return null;
     let id = '';
     const { logo } = team;
@@ -16,9 +13,10 @@ export default class TeamLogo extends React.Component<{ team?: Team | I.Team | n
     }
     return (
       <div className={`logo`}>
-          { logo && id ? <img src={`${apiUrl}api/teams/logo/${id}`} width={this.props.width} height={this.props.height} alt={'Team logo'} /> : ''}
+          { logo && id ? <img src={`${apiUrl}api/teams/logo/${id}`} width={width} height={height} alt={'Team logo'} /> : ''}
       </div>
     );
-  }
 
 }
+
+export default TeamLogo;

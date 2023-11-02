@@ -1,43 +1,26 @@
-import React from 'react';
 import './trivia.scss';
+import { useAction, useConfig } from '../../API/contexts/actions';
+import React, { useState } from 'react';
 
-import {configs, actions} from './../../App';
+const Trivia = () => {
+    const [ show, setShow ] = useState(false);
+    
+    const data = useConfig('trivia');
 
-export default class Trivia extends React.Component<any, { title: string, content: string, show: boolean }> {
-	constructor(props: any) {
-		super(props);
-		this.state = {
-            title:'Title',
-            content:'Content',
-            show: false
-		}
-	}
+    useAction('triviaState', (state) => {
+        setShow(state === "show");
+    });
 
-	componentDidMount() {
-        configs.onChange((data:any) => {
-            if(!data) return;
-            const trivia = data.trivia;
-            if(!trivia) return;
+    useAction('toggleCams', () => {
+        setShow(p => !p);
+    });
 
-            if(trivia.title && trivia.content){
-                this.setState({title:trivia.title, content:trivia.content})
-            }
-        });
-        actions.on("triviaState", (state: any) => {
-            this.setState({show: state === "show"})
-        });
-        actions.on("toggleTrivia", () => {
-            this.setState({show: !this.state.show})
-        });
-	}
-	
-	render() {
-		return (
-			<div className={`trivia_container ${this.state.show ? 'show': 'hide'}`}>
-                <div className="title">{this.state.title}</div>
-                <div className="content">{this.state.content}</div>
-            </div>
-		);
-	}
-
+    return (
+        <div className={`trivia_container ${show ? 'show': 'hide'}`}>
+            <div className="title">{data?.title}</div>
+            <div className="content">{data?.content}</div>
+        </div>
+    );
 }
+
+export default React.memo(Trivia);

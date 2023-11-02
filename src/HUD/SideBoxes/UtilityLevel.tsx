@@ -1,12 +1,11 @@
-import React from "react";
 import Weapon from "./../Weapon/Weapon";
-import { Player, WeaponRaw, Side } from "csgogsi-socket";
+import { Player, Side, WeaponRaw } from "csgogsi";
 
 interface Props {
-    sides?: 'reversed',
-    show: boolean;
-    side: 'CT' | 'T',
-    players: Player[]
+  sides?: "reversed";
+  show: boolean;
+  side: "CT" | "T";
+  players: Player[];
 }
 
 function utilityState(amount: number) {
@@ -49,17 +48,30 @@ function utilityColor(amount: number) {
 
 function sum(grenades: WeaponRaw[], name: string) {
   return (
-    grenades.filter(grenade => grenade.name === name).reduce((prev, next) => ({ ...next, ammo_reserve: (prev.ammo_reserve || 0) + (next.ammo_reserve || 0) }), { name: "", ammo_reserve: 0 })
+    grenades.filter((grenade) => grenade.name === name).reduce(
+      (prev, next) => ({
+        ...next,
+        ammo_reserve: (prev.ammo_reserve || 0) + (next.ammo_reserve || 0),
+      }),
+      { name: "", ammo_reserve: 0 },
+    )
       .ammo_reserve || 0
   );
 }
 
 function parseGrenades(players: Player[], side: Side) {
   const grenades = players
-    .filter(player => player.team.side === side)
-    .map(player => Object.values(player.weapons).filter(weapon => weapon.type === "Grenade"))
+    .filter((player) => player.team.side === side)
+    .map((player) =>
+      Object.values(player.weapons).filter((weapon) =>
+        weapon.type === "Grenade"
+      )
+    )
     .flat()
-    .map(grenade => ({ ...grenade, name: grenade.name.replace("weapon_", "") }));
+    .map((grenade) => ({
+      ...grenade,
+      name: grenade.name.replace("weapon_", ""),
+    }));
   return grenades;
 }
 
@@ -69,40 +81,44 @@ export function summarise(players: Player[], side: Side) {
     hg: sum(grenades, "hegrenade"),
     flashes: sum(grenades, "flashbang"),
     smokes: sum(grenades, "smokegrenade"),
-    inc: sum(grenades, "incgrenade") + sum(grenades, "molotov")
+    inc: sum(grenades, "incgrenade") + sum(grenades, "molotov"),
   };
 }
 
-class GrenadeContainer extends React.PureComponent<{ grenade: string; amount: number }> {
-  render() {
-    return (
-      <div className="grenade_container">
-        <div className="grenade_image">
-          <Weapon weapon={this.props.grenade} active={false} isGrenade />
-        </div>
-        <div className="grenade_amount">x{this.props.amount}</div>
+const GrenadeContainer = (
+  { grenade, amount }: { grenade: string; amount: number },
+) => {
+  return (
+    <div className="grenade_container">
+      <div className="grenade_image">
+        <Weapon weapon={grenade} active={false} isGrenade />
       </div>
-    );
-  }
-}
+      <div className="grenade_amount">x{amount}</div>
+    </div>
+  );
+};
 
-export default class SideBox extends React.Component<Props> {
-    render() {
-        const grenades = summarise(this.props.players, this.props.side);
-        const total = Object.values(grenades).reduce((a, b) => a+b, 0);
-        return (
-            <div className={`utilitybox ${this.props.side || ''} ${this.props.show ? "show" : "hide"}`}>
-                <div className="title_container">
-                    <div className="title">Utility Level -&nbsp;</div>
-                    <div className="subtitle" style={{color: utilityColor(total)}}>{utilityState(total)}</div>
-                </div>
-                <div className="grenades_container">
-                    <GrenadeContainer grenade="smokegrenade" amount={grenades.smokes} />
-                    <GrenadeContainer grenade={this.props.side === 'CT' ? 'incgrenade' : 'molotov'} amount={grenades.inc} />
-                    <GrenadeContainer grenade="flashbang" amount={grenades.flashes} />
-                    <GrenadeContainer grenade="hegrenade" amount={grenades.hg} />
-                </div>
-            </div>
-        );
-    }
-}
+const SideBox = ({ players, side, show }: Props) => {
+  const grenades = summarise(players, side);
+  const total = Object.values(grenades).reduce((a, b) => a + b, 0);
+  return (
+    <div className={`utilitybox ${side || ""} ${show ? "show" : "hide"}`}>
+      <div className="title_container">
+        <div className="title">Utility Level -&nbsp;</div>
+        <div className="subtitle" style={{ color: utilityColor(total) }}>
+          {utilityState(total)}
+        </div>
+      </div>
+      <div className="grenades_container">
+        <GrenadeContainer grenade="smokegrenade" amount={grenades.smokes} />
+        <GrenadeContainer
+          grenade={side === "CT" ? "incgrenade" : "molotov"}
+          amount={grenades.inc}
+        />
+        <GrenadeContainer grenade="flashbang" amount={grenades.flashes} />
+        <GrenadeContainer grenade="hegrenade" amount={grenades.hg} />
+      </div>
+    </div>
+  );
+};
+export default SideBox;

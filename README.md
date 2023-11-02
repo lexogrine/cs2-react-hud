@@ -17,20 +17,12 @@ Fullfledged example of the React HUD made for HUD Manager. It has:
 - Custom Radar
 
 ## Keybinds:
-### **Left Alt + S**
->Makes radar smaller by 20px;
 ### **Left Alt + B**
+>Makes radar smaller by 20px;
+### **Left Alt + V**
 >Makes radar bigger by 20px;
-### **Left Alt + T**
->Shows trivia box
-### **Left Alt + M**
->Toggles upcoming match box
-### **Left Alt + P**
->Toggles player preview
 ### **Left Alt + C**
 >Toggles camera feed
-### **Left Ctrl + B**
->Make radar invisible
 
 ## **Panel**
 ## Trivia settings
@@ -83,48 +75,57 @@ To create Signed HUD to prevent at least from modyfing compiled Javascript files
 
 
 ## `panel.json` API
-To get the incoming data from the HUD Manager, let's take a look at the `src/HUD/SideBoxes/SideBox.tsx` `componentDidMount()` method:
-```javascript
-import {configs} from  './../../App';
-...
-configs.onChange((data:any) => {
-	if(!data) return;
-	
-	const  display = data.display_settings;
-	
-	if(!display) return;
-	
-	if(display[`${this.props.side}_title`]){
-		this.setState({title:display[`${this.props.side}_title`]})
-	}
-	if(display[`${this.props.side}_subtitle`]){
-		this.setState({subtitle:display[`${this.props.side}_subtitle`]})
-	}
-	if(display[`${this.props.side}_image`]){
-		this.setState({image:display[`${this.props.side}_image`]})
-	}
-});
+To get the incoming data from the HUD Manager, let's take a look at the `src/HUD/SideBoxes/SideBox.tsx` component:
+```typescript
+const Sidebox = ({side, hide} : { side: 'left' | 'right', hide: boolean}) => {
+    const [ image, setImage ] = useState<string | null>(null);
+    const data = useConfig('display_settings');
+
+    useOnConfigChange('display_settings', data => {
+        if(data && `${side}_image` in data){
+            const imageUrl = `${apiUrl}api/huds/${hudIdentity.name || 'dev'}/display_settings/${side}_image?isDev=${hudIdentity.isDev}&cache=${(new Date()).getTime()}`;
+            setImage(imageUrl);
+        }
+    }, []);
+
+    if(!data || !data[`${side}_title`]) return null;
+    return (
+        <div className={`sidebox ${side} ${hide ? 'hide':''}`}>
+            <div className="title_container">
+                <div className="title">{data[`${side}_title`]}</div>
+                <div className="subtitle">{data[`${side}_subtitle`]}</div>
+            </div>
+            <div className="image_container">
+                {image ? <img src={image} id={`image_left`} alt={'Left'}/>:null}
+            </div>
+        </div>
+    );
+}
 ```
-To retrieve incoming data, you should just import `configs` object and then listen for the changes with `onChange` method. Usually you want to check for the specific data, as in the callback it will always serve the full form from the Manager.
-However it looks different in the case of action input. In this case, let's look at the `src/HUD/Trivia/Trivia.tsx`:
-```javascript
-import {configs, actions} from  './../../App';
-...
-actions.on("triviaState", (state: any) => {
-	this.setState({show:  state === "show"})
+
+You can just read data from the HUDs settings by using `useConfig` hook. Everything is now strictly typed. If you make a change to panel or keybinds JSON files, Vite server will automatically generate types for you, so useConfig should always be up to date.
+
+If you want to listen for a change in settings, you can use `useOnConfigChange`. In this case we are using this to force refresh `src` attribute of the img element.
+
+If you want to listen for action input, you can just use `useAction` hook, like here in Trivia.tsx:
+```typescript
+useAction('triviaState', (state) => {
+   setShow(state === "show");
 });
 ```
 For the action input we need to import the `actions` object and create listener with the parameter on it.
 ## `keybinds.json` API
-Keybinds API works in very similiar to `panel.json` action API. One more time the example will be from `src/HUD/Trivia/Trivia.tsx`:
-```javascript
-import {configs, actions} from  './../../App';
-...
-actions.on("toggleTrivia", () => {
-	this.setState({show: !this.state.show})
-});
+Keybinds API works in very similiar to `panel.json` action API. This time the example will be from `RadarMaps.tsx`:
+```typescript
+useAction('radarBigger', () => {
+   setRadarSize(p => p+10);
+}, []);
+
+useAction('radarSmaller', () => {
+   setRadarSize(p => p-10);
+}, []);
 ```
-Keybinds listener works on the same object as action input, in this case however there are no parameter to retrieve.
+
 
 ## Killfeed
 Because our  `csgogsi` has the ability to process input from HLAE's MIRV, listening for kills is very easy. We can see than in `src/HUD/Killfeed/Killfeed.tsx`:

@@ -3,7 +3,6 @@
 	top: 10px;
 	left: 10px;
 	border: none;
-	background-color: rgba(0,0,0,0.5);
 	transition: all 1s;
 	.map-container {
 		transition: all 1s;
@@ -24,18 +23,24 @@
 		perspective: 500px;
 	}
 }
-.radar-component-container {
-	width: 350px;
-	height:350px;
-	overflow: hidden;
-}
 #maps_container {
 	width: 100%;
 	height: 30px;
 	display: flex;
 	flex-direction: row;
 	justify-content: space-evenly;
-	background-color: rgba(0,0,0,0.5);
+	color: white;
+	background-color: var(--sub-panel-color);
+
+	.bestof {
+		width: 121px;
+		font-size: 16px;
+		font-weight: 700;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		text-transform: uppercase;
+	}
 }
 .veto_entry {
 	display: flex;
@@ -59,8 +64,15 @@
 			width: 23px;
 		}
 	}
-	.map_name.active {
-		text-shadow: 0 0 15px white;
-		font-weight: 600;
+	.map_name {
+		font-size:12px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		opacity: 0.5;
+
+		&.active {
+			opacity: 1;
+		}
 	}
 }

@@ -1,30 +1,40 @@
-import React from "react";
-import * as I from "csgogsi-socket";
-import WinIndicator from "./WinIndicator";
+import * as I from "csgogsi";
 import { Timer } from "./MatchBar";
 import TeamLogo from './TeamLogo';
 import PlantDefuse from "../Timers/PlantDefuse"
+import { onGSI } from "../../API/contexts/actions";
+import WinAnnouncement from "./WinIndicator";
+import { useState } from "react";
 
 interface IProps {
-  team: I.Team;
   orientation: "left" | "right";
   timer: Timer | null;
-  showWin: boolean;
+  team: I.Team;
 }
 
-export default class TeamScore extends React.Component<IProps> {
-  render() {
-    const { orientation, timer, team, showWin } = this.props;
+const TeamScore = ({orientation, timer, team }: IProps) => {
+    const [ show, setShow ] = useState(false);
+
+    onGSI("roundEnd", result => {
+      if(result.winner.orientation !== orientation) return;
+      setShow(true);
+
+      setTimeout(() => {
+        setShow(false);
+      }, 5000);
+    }, [orientation]);
+
     return (
       <>
-        <div className={`team ${orientation} ${team.side}`}>
-          <div className="team-name">{team.name}</div>
+        <div className={`team ${orientation} ${team.side || ''}`}>
+          <div className="team-name">{team?.name || null}</div>
           <TeamLogo team={team} />
           <div className="round-thingy"><div className="inner"></div></div>
         </div>
         <PlantDefuse timer={timer} side={orientation} />
-        <WinIndicator team={team} show={showWin}/>
+        <WinAnnouncement team={team} show={show} />
       </>
     );
-  }
 }
+
+export default TeamScore;

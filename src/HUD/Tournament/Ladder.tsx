@@ -1,5 +1,5 @@
-import React from 'react';
-import * as I from './../../api/interfaces';
+import * as I from './../../API/types';
+import { apiUrl } from '../../API';
 
 interface MatchData {
 	left: { name: string; score: string | number; logo: string };
@@ -11,83 +11,79 @@ interface Props {
     teams: I.Team[]
 }
 
-export default class Ladder extends React.Component<Props> {
-	joinParents = (matchup: I.TournamentMatchup, matchups: I.TournamentMatchup[]) => {
-		const { tournament } = this.props;
-		if (!tournament || !matchup) return matchup;
+const joinParents = (matchup: I.TournamentMatchup, matchups: I.TournamentMatchup[]) => {
+	if (!matchup) return matchup;
 
-		if (matchup.parents.length) return matchup;
+	if (matchup.parents.length) return matchup;
 
-		const parents = matchups.filter(m => m.winner_to === matchup._id || m.loser_to === matchup._id);
-		if (!parents.length) return matchup;
-		matchup.parents.push(...parents.map(parent => this.joinParents(parent, matchups)));
+	const parents = matchups.filter(m => m.winner_to === matchup._id || m.loser_to === matchup._id);
+	if (!parents.length) return matchup;
+	matchup.parents.push(...parents.map(parent => joinParents(parent, matchups)));
 
-		return matchup;
+	return matchup;
+};
+
+const copyMatchups = (currentMatchups: I.TournamentMatchup[]): I.DepthTournamentMatchup[] => {
+	const matchups = JSON.parse(JSON.stringify(currentMatchups)) as I.DepthTournamentMatchup[];
+	return matchups;
+};
+
+const setDepth = (matchups: I.DepthTournamentMatchup[], matchup: I.DepthTournamentMatchup, depth: number, force = false) => {
+	const getParents = (matchup: I.DepthTournamentMatchup) => {
+		return matchups.filter(parent => parent.loser_to === matchup._id || parent.winner_to === matchup._id);
 	};
 
-	copyMatchups = (): I.DepthTournamentMatchup[] => {
-		if (!this.props.tournament) return [];
-		const matchups = JSON.parse(JSON.stringify(this.props.tournament.matchups)) as I.DepthTournamentMatchup[];
-		return matchups;
+	if (!matchup.depth || force) {
+		matchup.depth = depth;
+		getParents(matchup).forEach(matchup => setDepth(matchups, matchup, depth + 1));
+	}
+	if (matchup.depth <= depth - 1) {
+		setDepth(matchups, matchup, depth - 1, true);
+	}
+	return matchup;
+};
+
+const getMatch = ({ matchup, matches, teams: allTeams}: { matches: I.Match[], teams: I.Team[], matchup: I.TournamentMatchup}) => {
+	const matchData: MatchData = {
+		left: { name: 'TBD', score: '-', logo: '' },
+		right: { name: 'TBD', score: '-', logo: '' }
 	};
+	const match = matches.find(match => match.id === matchup.matchId);
+	if (!match) return matchData;
+	const teams = [
+		allTeams.find(team => team._id === match.left.id),
+		allTeams.find(team => team._id === match.right.id)
+	];
+	if (teams[0]) {
+		matchData.left.name = teams[0].name;
+		matchData.left.score = match.left.wins;
+		matchData.left.logo = teams[0].logo;
+	}
+	if (teams[1]) {
+		matchData.right.name = teams[1].name;
+		matchData.right.score = match.right.wins;
+		matchData.right.logo = teams[1].logo;
+	}
+	return matchData;
+};
 
-	setDepth = (matchups: I.DepthTournamentMatchup[], matchup: I.DepthTournamentMatchup, depth: number, force = false) => {
-		const getParents = (matchup: I.DepthTournamentMatchup) => {
-			return matchups.filter(parent => parent.loser_to === matchup._id || parent.winner_to === matchup._id);
-		};
-
-		if (!matchup.depth || force) {
-			matchup.depth = depth;
-			getParents(matchup).forEach(matchup => this.setDepth(matchups, matchup, depth + 1));
-		}
-		if (matchup.depth <= depth - 1) {
-			this.setDepth(matchups, matchup, depth - 1, true);
-		}
-		return matchup;
-	};
-
-	getMatch = (matchup: I.TournamentMatchup) => {
-		const { matches } = this.props;
-		const matchData: MatchData = {
-			left: { name: 'TBD', score: '-', logo: '' },
-			right: { name: 'TBD', score: '-', logo: '' }
-		};
-		const match = matches.find(match => match.id === matchup.matchId);
-		if (!match) return matchData;
-		const teams = [
-			this.props.teams.find(team => team._id === match.left.id),
-			this.props.teams.find(team => team._id === match.right.id)
-		];
-		if (teams[0]) {
-			matchData.left.name = teams[0].name;
-			matchData.left.score = match.left.wins;
-			matchData.left.logo = teams[0].logo;
-		}
-		if (teams[1]) {
-			matchData.right.name = teams[1].name;
-			matchData.right.score = match.right.wins;
-			matchData.right.logo = teams[1].logo;
-		}
-		return matchData;
-	};
-
-	renderBracket = (
+const Ladder = ({ tournament, matches, teams }: Props) => {
+	const renderBracket = (
 		matchup: I.DepthTournamentMatchup | null | undefined,
 		depth: number,
 		fromChildId: string | undefined,
 		childVisibleParents: number,
 		isLast = false
 	) => {
-		const { tournament, matches } = this.props;
 		if (!matchup || !tournament) return null;
-		const match = this.getMatch(matchup);
+		const match = getMatch({ teams: teams, matches: matches, matchup});
 
 		if (fromChildId === matchup.loser_to) return null;
 		const parentsToRender = matchup.parents.filter(matchupParent => matchupParent.loser_to !== matchup._id);
 		if (matchup.depth > depth) {
 			return (
 				<div className="empty-bracket">
-					{this.renderBracket(matchup, depth + 1, fromChildId, parentsToRender.length)}
+					{renderBracket(matchup, depth + 1, fromChildId, parentsToRender.length)}
 					<div className="connector"></div>
 				</div>
 			);
@@ -97,8 +93,8 @@ export default class Ladder extends React.Component<Props> {
 		return (
 			<div className={`bracket depth-${depth}`}>
 				<div className="parent-brackets">
-					{this.renderBracket(matchup.parents[0], depth + 1, matchup._id, parentsToRender.length)}
-					{this.renderBracket(matchup.parents[1], depth + 1, matchup._id, parentsToRender.length)}
+					{renderBracket(matchup.parents[0], depth + 1, matchup._id, parentsToRender.length)}
+					{renderBracket(matchup.parents[1], depth + 1, matchup._id, parentsToRender.length)}
 				</div>
 				<div className="bracket-details">
 					<div
@@ -110,14 +106,14 @@ export default class Ladder extends React.Component<Props> {
 					<div className={`match-details ${isCurrent ? 'current':''}`}>
 						<div className="team-data">
 							<div className="team-logo">
-								{match.left.logo ? <img src={match.left.logo} alt="Logo" /> : null}
+								{match.left.logo ? <img src={`${apiUrl}api/teams/logo/direct/${match.left.logo}`} alt="Logo" /> : null}
 							</div>
 							<div className="team-name">{match.left.name}</div>
 							<div className="team-score">{match.left.score}</div>
 						</div>
 						<div className="team-data">
 							<div className="team-logo">
-								{match.right.logo ? <img src={match.right.logo} alt="Logo" /> : null}
+								{match.right.logo ? <img src={`${apiUrl}api/teams/logo/direct/${match.right.logo}`} alt="Logo" /> : null}
 							</div>
 							<div className="team-name">{match.right.name}</div>
 							<div className="team-score">{match.right.score}</div>
@@ -132,14 +128,13 @@ export default class Ladder extends React.Component<Props> {
 		);
 	};
 
-	render() {
-		const { tournament } = this.props;
 		if (!tournament) return null;
-		const matchups = this.copyMatchups();
+		const matchups = copyMatchups(tournament.playoffs.matchups);
 		const gf = matchups.find(matchup => matchup.winner_to === null);
 		if (!gf) return null;
-		const joinedParents = this.joinParents(gf, matchups);
-		const matchupWithDepth = this.setDepth(matchups, joinedParents as I.DepthTournamentMatchup, 0);
-		return this.renderBracket(matchupWithDepth, 0, undefined, 2, true);
-	}
+		const joinedParents = joinParents(gf, matchups);
+		const matchupWithDepth = setDepth(matchups, joinedParents as I.DepthTournamentMatchup, 0);
+		return renderBracket(matchupWithDepth, 0, undefined, 2, true);
 }
+
+export default Ladder;

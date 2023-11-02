@@ -1,6 +1,5 @@
-import React from 'react';
 import Player from './Player'
-import * as I from 'csgogsi-socket';
+import * as I from 'csgogsi';
 import './players.scss';
 
 interface Props {
@@ -9,17 +8,15 @@ interface Props {
   side: 'right' | 'left',
   current: I.Player | null,
 }
-
-export default class TeamBox extends React.Component<Props> {
-  render() {
-    return (
-      <div className={`teambox ${this.props.team.side} ${this.props.side}`}>
-        {this.props.players.map(player => <Player
-          key={player.steamid}
-          player={player}
-          isObserved={!!(this.props.current && this.props.current.steamid === player.steamid)}
-        />)}
-      </div>
-    );
-  }
+const TeamBox = ({players, team, side, current}: Props) => {
+  return (
+    <div className={`teambox ${team.side} ${side}`}>
+      {players.map(player => <Player
+        key={player.steamid}
+        player={player}
+        isObserved={!!(current && current.steamid === player.steamid)}
+      />)}
+    </div>
+  );
 }
+export default TeamBox;
