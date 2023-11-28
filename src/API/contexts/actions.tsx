@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState, createContext, ReactNode, useContext } from "react";
 import ActionManager, { ActionHandler, ConfigManager } from "./managers";
 import { Events } from "csgogsi";
 import { GSI } from "../HUD";
-import type { AllActions, GetInputsFromSection, Sections } from "./settings";
+import type { AllActions, AllInputs, GetInputsFromSection, Sections } from "./settings";
 
 export const actions = new ActionManager();
 export const configs = new ConfigManager();
@@ -50,13 +50,38 @@ export function onGSI<T extends BaseEvents>(event: T, callback: Callback<T>, dep
   }, deps ? [event, ...deps] : [event, callback])
 }
 
-export function useConfig<K extends keyof Sections, T extends { [K: string]: any } = {}>(section: K){
-  const [ data, setData ] = useState<{ [L in keyof (K extends keyof Sections ? GetInputsFromSection<Sections[K]> : T)]?: (K extends keyof Sections ? GetInputsFromSection<Sections[K]> : T)[L] } | null>(configs.data?.[section] || null);
+const SettingsContext = createContext<AllInputs | null>({} as AllInputs);
+export const SettingsProvider = ({ children }: { children: ReactNode }) => {
+  const [ data, setData ] = useState<AllInputs | null>(configs.data as AllInputs || null);
 
-  const onDataChanged = useCallback((sectionData: any) => {
-    setData(sectionData || null);
-  }, [section]);
 
-  useOnConfigChange(section, onDataChanged);
-  return data;
+
+  useEffect(() => {
+    const onDataChanged = (data: any) => {
+      setData(data);
+    };
+
+    configs.onChange(onDataChanged);
+    onDataChanged(configs.data);
+
+    return () => {
+      configs.off(onDataChanged);
+    }
+  }, [])
+
+  return (
+    <SettingsContext.Provider
+      value={data}
+    >
+      {children}
+    </SettingsContext.Provider>
+  );
+};
+
+export function useConfig<K extends keyof Sections>(section: K){
+  const context = useContext(SettingsContext);
+  if (context === undefined) {
+    throw new Error('generic Hook must be used within a Generic Provider');
+  }
+  return context?.[section];
 }

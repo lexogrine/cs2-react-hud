@@ -42,6 +42,8 @@ type ValueMapper<T extends Settings[number]["inputs"]> = { [K in T[number] as K[
 export type GetInputsFromSection<T extends Settings[number]["inputs"]> = { [K in NonNeverKeys<ValueMapper<T>>]: ValueMapper<T>[K]};
 export type Sections = { [K in Settings[number] as K["name"]]: K["inputs"]}
 
+export type AllInputs = { [K in keyof Sections]: GetInputsFromSection<Sections[K]> };
+
 type ActionValueMapper<T extends Settings[number]["inputs"]> = { [K in T[number] as K["name"]]: K extends { type: "action" } ? K["values"][number]["name"] : never }
 
 type GetActionsFromSection<T extends Settings[number]["inputs"]> = { [K in NonNeverKeys<ActionValueMapper<T>>]: ActionValueMapper<T>[K]};

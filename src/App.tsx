@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { CSGO } from 'csgogsi'
-import { onGSI } from './API/contexts/actions'
+import { SettingsProvider, onGSI } from './API/contexts/actions'
 import Layout from './HUD/Layout/Layout';
 import './API/socket';
 import { Match } from './API/types';
@@ -74,7 +74,9 @@ function App() {
 
   if (!game) return null;
   return (
-    <Layout game={game} match={match} />
+    <SettingsProvider>
+      <Layout game={game} match={match} />
+    </SettingsProvider>
   );
 }
 
