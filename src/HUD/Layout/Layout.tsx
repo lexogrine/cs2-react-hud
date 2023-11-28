@@ -17,6 +17,7 @@ import Timeout from "../PauseTimeout/Timeout";
 import { CSGO } from "csgogsi";
 import { Match } from "../../API/types";
 import { useAction } from "../../API/contexts/actions";
+import { Scout } from "../Scout";
 
 interface Props {
   game: CSGO,
@@ -73,7 +74,7 @@ const Layout = ({game,match}: Props) => {
       <TeamBox team={right} players={rightPlayers} side="right" current={game.player} />
 
       <Trivia />
-
+      <Scout left={left.side} right={right.side} />
       <MapSeries teams={[left, right]} match={match} isFreezetime={isFreezetime} map={game.map} />
       <div className={"boxes left"}>
         <UtilityLevel side={left.side} players={game.players} show={isFreezetime && !forceHide} />
