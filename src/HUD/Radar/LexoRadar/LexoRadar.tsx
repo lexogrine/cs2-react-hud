@@ -157,7 +157,7 @@ const Radar = ({ players, grenades, mapConfig, bomb, mapName, zoom, reverseZoom 
     const explosions = grenades.filter(grenade => grenade.type === "frag" && grenade.state === "exploded");
     return <div className="map" style={style}>
         {players.map(player => <PlayerDot reverseZoom={reverseZoom} key={player.id} player={player} />)}
-        {grenades.map(grenade => <Grenade explosions={explosions.map(g => ({ position: g.position, grenadeId: g.id }))} reverseZoom={reverseZoom} side={grenade.side} key={grenade.id} type={grenade.type} state={grenade.state} visible={grenade.visible} position={grenade.position} flames={"flames" in grenade} />)}
+        {grenades.map(grenade => <Grenade explosions={explosions.map(g => ({ position: g.position, grenadeId: g.id }))} reverseZoom={reverseZoom} side={grenade.side} key={grenade.id + grenade.position} type={grenade.type} state={grenade.state} visible={grenade.visible} position={grenade.position} flames={"flames" in grenade} />)}
         <Bomb reverseZoom={reverseZoom} bomb={bomb} mapConfig={mapConfig} />
       </div>;
 }
