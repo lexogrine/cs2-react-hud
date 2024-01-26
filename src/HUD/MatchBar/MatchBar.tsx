@@ -35,10 +35,10 @@ export interface Timer {
 }
 const getRoundLabel = (mapRound: number) => {
   const round = mapRound + 1;
-  if (round <= 30) {
-    return `Round ${round}/30`;
+  if (round <= 24) {
+    return `Round ${round}/24`;
   }
-  const additionalRounds = round - 30;
+  const additionalRounds = round - 24;
   const OT = Math.ceil(additionalRounds/6);
   return `OT ${OT} (${additionalRounds - (OT - 1)*6}/6)`;
 }
