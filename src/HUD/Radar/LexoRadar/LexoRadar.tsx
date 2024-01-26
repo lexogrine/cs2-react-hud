@@ -109,7 +109,7 @@ const Bomb = ({ bomb, mapConfig, reverseZoom }: { reverseZoom: string, bomb?: Bo
     const position = parsePosition(bomb.position, config.config);
     if(!position) return null;
     return (
-      <div className={`bomb ${bomb.state} ${config.isVisible(bomb.position[2]) ? 'visible':'hidden'}`}
+      <div key={`bomb_${config.id}`} className={`bomb ${bomb.state} ${config.isVisible(bomb.position[2]) ? 'visible':'hidden'}`}
         style={{
           transform: `translateX(${position[0].toFixed(2)}px) translateY(${position[1].toFixed(2)}px) translateZ(10px) scale(${reverseZoom})`
         }}>

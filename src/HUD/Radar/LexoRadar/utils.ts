@@ -120,7 +120,7 @@ export const extendGrenade = ({grenade, mapName, side }: { side: Side, grenade: 
                 });
             }
             return map.configs.map(config => ({
-                id: `${flame}_${extGrenade.id}_${config.id}`,
+                id: `${flame.id}_${extGrenade.id}_${config.id}`,
                 visible: config.isVisible(flame.position[2]),
                 position: parsePosition(flame.position, config.config)
             }));
