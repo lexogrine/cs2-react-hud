@@ -46,6 +46,16 @@
             }
         }
     }
+    .weapon.zeus {
+        height: 30px;
+        position: absolute;
+        &.left {
+            left: 170px;
+        }
+        &.right {
+            right: 170px;
+        }
+    }
     &.right {
         right: 10px;
         .player {

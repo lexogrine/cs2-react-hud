@@ -69,11 +69,14 @@ const arePlayersEqual = (playerOne: I.Player, playerTwo: I.Player) => {
 }
 const Player = ({ player, isObserved }: IProps) => {
 
-  const weapons = Object.values(player.weapons).map(weapon => ({ ...weapon, name: weapon.name.replace("weapon_", "") }));
+  const weapons = player.weapons.map(weapon => ({ ...weapon, name: weapon.name.replace("weapon_", "") }));
   const primary = weapons.filter(weapon => !['C4', 'Pistol', 'Knife', 'Grenade', undefined].includes(weapon.type))[0] || null;
   const secondary = weapons.filter(weapon => weapon.type === "Pistol")[0] || null;
   const grenades = weapons.filter(weapon => weapon.type === "Grenade");
   const isLeft = player.team.orientation === "left";
+
+  const zeus = weapons.find(weapon => weapon.name === "taser");
+
   return (
     <div className={`player ${player.state.health === 0 ? "dead" : ""} ${isObserved ? 'active' : ''}`}>
       <div className="player_data">
@@ -109,6 +112,7 @@ const Player = ({ player, isObserved }: IProps) => {
               <Defuse player={player} />
             </div>
             <div className="money">${player.state.money}</div>
+            {zeus ? <Weapon className={`zeus ${player.team.orientation}`} weapon="taser" active={zeus.state === "active"} /> : null}
             <div className="grenades">
               {grenades.map(grenade => (
                 [
