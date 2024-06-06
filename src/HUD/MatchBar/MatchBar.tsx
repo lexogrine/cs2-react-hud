@@ -22,7 +22,7 @@ function stringToClock(time: string | number, pad = true) {
 interface IProps {
   match: Match | null;
   map: I.Map;
-  phase: I.PhaseRaw,
+  phase: I.CSGO["phase_countdowns"],
   bomb: I.Bomb | null,
 }
 

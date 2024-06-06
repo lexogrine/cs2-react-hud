@@ -1,7 +1,7 @@
-import { PhaseRaw } from "csgogsi";
+import { CSGO } from "csgogsi";
 
 interface IProps {
-  phase: PhaseRaw | null;
+  phase: CSGO["phase_countdowns"] | null;
 }
 
 const Pause = ({ phase }: IProps) => {

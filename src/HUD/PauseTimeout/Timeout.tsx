@@ -1,12 +1,12 @@
-import { Map, PhaseRaw } from "csgogsi";
+import { Map, CSGO } from "csgogsi";
 
 interface IProps {
-  phase: PhaseRaw | null;
+  phase: CSGO["phase_countdowns"] | null;
   map: Map;
 }
 
 const Timeout = ({ phase, map }: IProps) => {
-  const time = phase && Math.abs(Math.ceil(parseFloat(phase.phase_ends_in)));
+  const time = phase && Math.abs(Math.ceil(phase.phase_ends_in));
   const team = phase && phase.phase === "timeout_t" ? map.team_t : map.team_ct;
 
   return (

@@ -31,7 +31,7 @@ export const useBombTimer = () => {
             const state = bomb?.state || null;
             const site = bomb?.site || null;
 
-            const countdown = parseFloat(bomb?.countdown || '0');
+            const countdown = bomb?.countdown || 0;
 
             setPlayerSteamId(bombPlayer);
             setBombState(state);
