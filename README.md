@@ -1,6 +1,6 @@
-### **CS2 React HUD for [LHM.gg](http://LHM.gg)**
+### **CS2 React HUD for [LHM.gg](https://LHM.gg)**
 
-CS2 React HUD for [LHM.gg](http://LHM.gg), created by Lexogrine, is an open source Counter-Strike 2 HUD that you can use and modify to your needs. It’s the core element of building customized CS2 HUDs and spectator overlays for the [LHM.gg](http://LHM.gg) platform.
+CS2 React HUD for [LHM.gg](https://LHM.gg), created by Lexogrine, is an open source Counter-Strike 2 HUD that you can use and modify to your needs. It’s the core element of building customized CS2 HUDs and spectator overlays for the [LHM.gg](https://LHM.gg) platform.
 
 It comes with a set of default options and features that you can use for creating your unique esport experience.
 
@@ -58,7 +58,7 @@ To build a version to distribute and move around, in the root directory, run `np
 
 ##### **Signing**
 
-To create Signed CS2 HUD for [LHM.gg](http://LHM.gg) to prevent at least from modifying compiled JavaScript files, run `npm run sign`. It's the same as `npm run pack` command but with an additional step of signing `.js` and `.css` files and `hud.json`.
+To create Signed CS2 HUD for [LHM.gg](https://LHM.gg) to prevent at least from modifying compiled JavaScript files, run `npm run sign`. It's the same as `npm run pack` command but with an additional step of signing `.js` and `.css` files and `hud.json`.
 
 ##### **File structure**
 
@@ -159,8 +159,8 @@ Radar is a custom React-based component made by Hubert Walczak and is easily edi
 
 #### **About Lexogrine**
 
-Lexogrine is an AI software development company, offering top-tier AI, web, and mobile design and development services for international companies. Alongside that, Lexogrine offers a set of web and mobile applications - including [LHM.gg](http://LHM.gg) - that revolutionize the way experts and specialists from different industries work together on a daily basis.
+[Lexogrine](https://lexogrine.com) is an AI software development company, offering top-tier AI, web, and mobile design and development services for international companies. Alongside that, Lexogrine offers a set of web and mobile applications - including [LHM.gg](https://LHM.gg) - that revolutionize the way experts and specialists from different industries work together on a daily basis.
 
-Lexogrine specializes in AI development, alongside web, mobile, and cloud development with technologies like TypeScript, Python, LLM, React, React Native, Node.js, Prisma, Medusa, Pytorch, AWS, and Google Cloud Platform.
+[Lexogrine](https://lexogrine.com) specializes in AI development, alongside web, mobile, and cloud development with technologies like TypeScript, Python, LLM, React, React Native, Node.js, Prisma, Medusa, Pytorch, AWS, and Google Cloud Platform.
 
 With over 5 years of experience, Lexogrine delivered hundreds of projects, supporting companies and enterprises from all over the world.
