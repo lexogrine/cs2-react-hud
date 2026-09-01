@@ -1,14 +1,17 @@
 [
     {
         "bind":"Alt+C",
-        "action":"toggleCams"
+        "action":"toggleCams",
+        "label":"Toggle Cameras"
     },
     {
         "bind":"Alt+V",
-        "action":"radarBigger"
+        "action":"radarBigger",
+        "label":"Increase Radar Size"
     },
     {
         "bind":"Alt+B",
-        "action":"radarSmaller"
+        "action":"radarSmaller",
+        "label":"Decrease Radar Size"
     }
 ]
